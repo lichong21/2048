@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>2048</title>
+  <style>
+    .sign {
+      display: inline-block;
+      width: 100px;
+      font-size: 20px;
+      font-weight: 600;
+      background-color: antiquewhite;
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="btn">
+    <div class="left sign">left</div>
+    <div class="right sign">right</div>
+    <div class="up sign">up</div>
+    <div class="down sign">down</div>
+  <script>
+    const btn = document.getElementById('btn');
+    btn.addEventListener('click', (e) => {
+      const className = e.target.className;
+      const direction = className.split(' ')[0];
+      // console.log(className);
+      logGrids();
+      moveGrids(grids, direction);
+      logGrids(grids);
+      fillEmptyGrid(grids);
+      logGrids(grids);
+    })
+
+    let grids = createGrids(4);
+    fillEmptyGrid(grids);
+    fillEmptyGrid(grids);
+
+
+// -----------------------------工具函数-------------------------------------------
+function moveGrids(grids, direction) {
+  const movePosition = moveDirection(direction);
+  switch (direction) {
+    case 'left':
+      moveLeft(grids);
+      break;
+    case 'right':
+      moveRight(grids);
+      break;
+    case 'up':
+      moveUp(grids);
+      break;
+    case 'down':
+      moveDown(grids)
+      break;
+  
+  }
+}
+
+function moveLeft(grids) {
+  for (let i = 0; i < grids.length; i++) {
+    const arr = [];
+    for(let j = 0; j < grids[i].length; j++) {
+      if (grids[i][j]) {
+        arr.push(grids[i][j])
+        grids[i][j] = null;
+      };
+    }
+    // console.log('row', arr);
+    let left = 0;
+    let right = 1;
+    while (right < arr.length) {
+      if (arr[left] === arr[right]) {
+        arr[left] = arr[left] * 2;
+        arr[right] = null;
+        right++;
+        left = right;
+        right++;
+      } else {
+        left++;
+        right++;
+      }
+    }
+    const validGrids = arr.filter(num => num);
+    // console.log('newRow', validGrids);
+    for(let m = 0; m < validGrids.length; m++) {
+      grids[i][m] = validGrids[m];
+    }
+  }
+}
+
+function moveRight(grids) {
+  console.log('right');
+  for (let i = 0; i < grids.length; i++) {
+    const arr = [];
+    for(let j = 0; j < grids[i].length; j++) {
+      if (grids[i][j]) {
+        arr.push(grids[i][j])
+        grids[i][j] = null;
+      };
+    }
+    let right = arr.length - 1;
+    let left = right--;
+    while (left >= 0) {
+      if (arr[left] === arr[right]) {
+        arr[right] = arr[right] * 2;
+        arr[left] = null;
+        left--;
+        right = left;
+        left--;
+      } else {
+        left--;
+        right--;
+      }
+    }
+    const validGrids = arr.filter(num => num);
+    console.log('row', arr);
+    let validRight = validGrids.length-1;
+    let gridsRight = grids[i].length-1;
+    console.log(validRight, gridsRight);
+    while (validRight >= 0 && gridsRight >= 0) {
+      grids[i][gridsRight] = validGrids[validRight];
+      validRight--;
+      gridsRight--;
+    }
+  }
+}
+
+function moveUp(grids) {
+  for (let i = 0; i < grids.length; i++) {
+    const arr = [];
+    for(let j = 0; j < grids[i].length; j++) {
+      if (grids[j][i]) {
+        arr.push(grids[j][i])
+        grids[j][i] = null;
+      };
+    }
+    console.log(111, arr)
+    let up = 0;
+    let down = 1;
+    while (down < arr.length) {
+      if (arr[up] === arr[down]) {
+        arr[up] = arr[up] * 2;
+        arr[down] = null;
+        down++;
+        up = down;
+        down++;
+      } else {
+        up++;
+        down++;
+      }
+    }
+    console.log(111, arr)
+    const validGrids = arr.filter(num => num);
+    for (let m = 0; m < validGrids.length; m++) {
+      grids[m][i] = validGrids[m];
+    }
+  }
+}
+
+function moveDown(grids) {
+  for (let i = 0; i < grids.length; i++) {
+    const arr = [];
+    for(let j = 0; j < grids[i].length; j++) {
+      if (grids[j][i]) {
+        arr.push(grids[j][i])
+        grids[j][i] = null;
+      };
+    }
+    let down = arr.length - 1;
+    let up = down - 1;
+    while (up >= 0) {
+      if (arr[up] === arr[down]) {
+        arr[down] = arr[down] * 2;
+        arr[up] = null;
+        up--;
+        down = up;
+        up--;
+      } else {
+        up--;
+        down--;
+      }
+    }
+    console.log(111, arr)
+    const validGrids = arr.filter(num => num);
+    let validDown = validGrids.length - 1;
+    let gridsDown = grids[i].length - 1;
+    while (validDown >= 0 && gridsDown >= 0) {
+      grids[gridsDown][i] = validGrids[validDown];
+      validDown--;
+      gridsDown--;
+    }
+  }
+}
+
+
+function moveDirection(direction) {
+  const DIRECTION_MAP = {
+    'left': {
+      x: -1,
+      y: 0
+    },
+    'right': {
+      x: 1,
+      y: 0
+    },
+    'up': {
+      x: 0,
+      y: -1
+    },
+    'down': {
+      x: 0,
+      y: 1
+    }
+  };
+  return DIRECTION_MAP[direction];
+}
+
+
+
+// -----------------------------工具函数-------------------------------------------
+    function createGrids(size) {
+      let arr = [];
+      for (let i = 0; i < size; i++) {
+        arr[i] = [];
+        for (let j = 0; j < size; j++) {
+          arr[i][j] = null;
+        }
+      }
+      return arr;
+    }
+
+
+    function availableGids(size) {
+      const arr = [];
+      for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+          if (!grids[i][j]) arr.push({ x:i, y: j });
+        }
+      }
+      return arr;
+    }
+
+    function fillEmptyGrid(targetArr) {
+      const emptyPositions = availableGids(targetArr.length);
+      if (!emptyPositions.length) return;
+      const randomIndex = Math.floor(Math.random() * emptyPositions.length);
+      const { x, y } = emptyPositions[randomIndex];
+      const num = createRandomNum();
+      targetArr[x][y] = num;
+    }
+
+    function createRandomNum() {
+      return Math.random() < 0.8 ? 2 : 4;
+    }
+
+
+    function logGrids() {
+      console.table(grids);
+    }
+  </script>
+</body>
+
+</html>
